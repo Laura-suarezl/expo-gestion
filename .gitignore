@@ -1,0 +1,4 @@
+tests/capturas/
+tests/ultimo-resultado.txt
+__pycache__/
+.vercel/

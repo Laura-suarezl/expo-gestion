@@ -1,0 +1,241 @@
+/* Leasing y renting — diapositivas · mundo «Informe de gestión» con la paleta del PDF del grupo */
+
+@font-face {
+  font-family: "Manrope";
+  src: url("fonts/Manrope-wght.ttf") format("truetype");
+  font-weight: 200 800;
+  font-display: block;
+}
+
+:root {
+  --ground: #f2f2f2;
+  --ground-2: #e8e8e8;
+  --ink: #06171b;
+  --petroleo: #072e36;
+  --pizarra: #26525c;
+  --medio: #6598a3;
+  --celeste: #afd0d7;
+  --medio-ink: #3f7682; /* el celeste medio cuando es texto o línea sobre el fondo: 4,55:1 */
+  --muted: #4f6269;
+  --alerta: #b3261e;
+  --desk: #0d1f24;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--desk);
+  color: var(--ink);
+  font-family: "Manrope", system-ui, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--celeste); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--medio); outline-offset: 3px; }
+
+.frame { position: fixed; inset: 0; }
+.stage {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform-origin: 50% 50%;
+  background: var(--ground);
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+}
+
+/* Cromo de la página */
+.runhead {
+  position: absolute; left: 120px; right: 120px; top: 44px; z-index: 5;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 21px; font-weight: 600; color: var(--pizarra);
+  padding-bottom: 14px; border-bottom: 1.5px solid var(--celeste);
+  transition: opacity 0.3s var(--ease);
+}
+.runhead b { color: var(--petroleo); font-weight: 800; }
+.foot {
+  position: absolute; left: 120px; right: 120px; bottom: 36px; z-index: 5;
+  display: flex; align-items: center; gap: 34px;
+  transition: opacity 0.3s var(--ease);
+}
+.rail { flex: 1; display: flex; gap: 10px; }
+.rail .seg { flex: var(--n); }
+.rail .seg i { display: block; height: 6px; border-radius: 3px; background: var(--ground-2); overflow: hidden; position: relative; }
+.rail .seg i::after {
+  content: ""; position: absolute; inset: 0; background: var(--pizarra);
+  transform-origin: left; transform: scaleX(var(--fill, 0));
+  transition: transform 0.6s var(--ease);
+}
+.rail .seg span { display: block; font-size: 17px; font-weight: 700; color: var(--muted); margin-top: 8px; }
+.rail .seg.now span { color: var(--petroleo); }
+.pageno { font-size: 20px; font-weight: 700; color: var(--pizarra); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+.stage.is-video .runhead, .stage.is-video .foot, .stage.is-cover .runhead { opacity: 0; pointer-events: none; }
+.stage.is-cover .foot { opacity: 0; }
+
+/* Diapositivas */
+.slide {
+  position: absolute; inset: 0;
+  opacity: 0; visibility: hidden;
+  transform: translateX(calc(var(--dir, 1) * 48px));
+  transition: opacity 0.55s var(--ease), transform 0.7s var(--ease), visibility 0s linear 0.6s;
+}
+.slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.55s var(--ease), transform 0.7s var(--ease), visibility 0s; }
+.slide.past { transform: translateX(calc(var(--dir, 1) * -48px)); }
+
+.t {
+  position: absolute; left: 120px; top: 104px; right: 120px; margin: 0;
+  font-size: 64px; font-weight: 800; line-height: 1.06; letter-spacing: -0.02em; color: var(--petroleo);
+  text-wrap: balance;
+}
+.lead {
+  position: absolute; left: 120px; top: 192px; width: 1280px; margin: 0;
+  font-size: 29px; line-height: 1.32; font-weight: 500; color: var(--pizarra);
+}
+.body { position: absolute; left: 120px; right: 120px; top: 290px; bottom: 140px; }
+.src { position: absolute; left: 120px; bottom: 96px; margin: 0; font-size: 17px; color: var(--muted); }
+
+/* Piezas de texto */
+.h3 + .txt, .h3 + .txt-s, .h4 + .txt, .h4 + .txt-s { margin-top: 10px; }
+p, li, h3, h4 { margin: 0; }
+.h3 { font-size: 34px; font-weight: 800; color: var(--petroleo); letter-spacing: -0.01em; line-height: 1.1; }
+.h4 { font-size: 27px; font-weight: 800; color: var(--petroleo); line-height: 1.15; }
+.txt { font-size: 25px; line-height: 1.36; font-weight: 500; color: var(--ink); }
+.txt-s { font-size: 21px; line-height: 1.35; font-weight: 500; color: var(--pizarra); }
+.note { font-size: 19px; line-height: 1.35; font-weight: 600; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.strong { font-weight: 800; color: var(--petroleo); }
+.alert { color: var(--alerta); }
+
+.plate {
+  background: var(--petroleo); color: var(--ground);
+  border-radius: 14px; padding: 22px 34px;
+  font-size: 31px; font-weight: 700; line-height: 1.25;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  border-radius: 999px; padding: 8px 20px;
+  font-size: 22px; font-weight: 800; line-height: 1;
+}
+.chip.leasing { background: var(--petroleo); color: var(--ground); }
+.chip.renting { background: var(--medio); color: var(--ink); }
+.chip.leaseback { background: var(--pizarra); color: var(--ground); }
+.chip.ghost { background: transparent; color: var(--pizarra); box-shadow: inset 0 0 0 2px var(--medio); }
+
+.ico { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.ico.thin { stroke-width: 2.4; }
+.line-art { fill: none; stroke: var(--ink); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Animaciones de construcción: corren al abrir la diapositiva */
+.a-up, .a-fade, .a-left, .a-right, .a-pop, .a-grow-y, .a-grow-x, .a-wipe, .a-drop { opacity: 0; }
+.slide.on .a-up    { animation: a-up 0.75s var(--ease) var(--d, 0s) both; }
+.slide.on .a-fade  { animation: a-fade 0.8s var(--ease) var(--d, 0s) both; }
+.slide.on .a-left  { animation: a-left 0.75s var(--ease) var(--d, 0s) both; }
+.slide.on .a-right { animation: a-right 0.75s var(--ease) var(--d, 0s) both; }
+.slide.on .a-pop   { animation: a-pop 0.6s var(--ease) var(--d, 0s) both; }
+.slide.on .a-drop  { animation: a-drop 0.7s var(--ease) var(--d, 0s) both; }
+.slide.on .a-grow-y { animation: a-grow-y 0.9s var(--ease) var(--d, 0s) both; transform-origin: 50% 100%; transform-box: fill-box; }
+.slide.on .a-grow-x { animation: a-grow-x 0.9s var(--ease) var(--d, 0s) both; transform-origin: 0 50%; transform-box: fill-box; }
+.slide.on .a-wipe  { animation: a-wipe 0.9s var(--ease) var(--d, 0s) both; }
+.a-draw { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.slide.on .a-draw  { animation: a-draw var(--t, 1.2s) cubic-bezier(0.45, 0, 0.2, 1) var(--d, 0s) both; }
+
+@keyframes a-up    { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes a-fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes a-left  { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
+@keyframes a-right { from { opacity: 0; transform: translateX(34px); } to { opacity: 1; transform: none; } }
+@keyframes a-pop   { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: none; } }
+@keyframes a-drop  { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: none; } }
+@keyframes a-grow-y { from { opacity: 1; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes a-grow-x { from { opacity: 1; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes a-wipe  { from { opacity: 1; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+@keyframes a-draw  { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/* ---------- Componentes por diapositiva ---------- */
+
+/* Portada */
+.cover-art { position: absolute; left: 70px; top: 120px; width: 760px; height: 760px; }
+.slide.on .vline, .slide.on .cover-rule { transform-origin: 50% 0 !important; }
+.cover-rule { position: absolute; left: 880px; top: 120px; width: 3px; height: 760px; background: var(--petroleo); transform-origin: top; }
+.cover-brand { position: absolute; left: 950px; top: 150px; display: flex; align-items: center; gap: 26px; }
+.cover-brand img { width: 220px; height: auto; }
+.cover-brand span { font-size: 28px; font-weight: 700; color: var(--pizarra); line-height: 1.15; }
+.cover-title { position: absolute; left: 950px; top: 330px; margin: 0; font-size: 96px; line-height: 0.98; font-weight: 800; letter-spacing: -0.03em; color: var(--petroleo); }
+.cover-title em { font-style: normal; color: var(--medio-ink); }
+.cover-sub { position: absolute; left: 954px; top: 560px; width: 820px; margin: 0; font-size: 32px; line-height: 1.3; font-weight: 600; color: var(--pizarra); }
+.cover-band { position: absolute; left: 880px; right: 0; bottom: 120px; height: 190px; background: var(--petroleo); color: var(--ground); padding: 34px 70px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 40px; align-content: center; }
+.cover-band span { font-size: 27px; font-weight: 700; }
+
+/* Ruta */
+.route-col { position: absolute; top: 150px; }
+.route-col .h4 { margin-bottom: 18px; }
+.route-col ol { list-style: none; padding: 0; margin: 0; }
+.route-col li { font-size: 24px; font-weight: 600; line-height: 1.3; padding: 9px 0; border-bottom: 1px solid var(--celeste); color: var(--ink); }
+.route-col li b { color: var(--medio-ink); font-weight: 800; margin-right: 10px; font-variant-numeric: tabular-nums; }
+
+/* Tres puertas */
+.doors { position: absolute; left: 0; right: 0; top: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 46px; }
+.door { border-top: 6px solid var(--c); padding-top: 26px; }
+.door svg { width: 120px; height: 120px; color: var(--c-ink, var(--c)); margin-bottom: 18px; }
+.door .h3 { color: var(--c-ink, var(--c)); margin-bottom: 14px; }
+
+/* Gráfico de caja */
+.kpi { border-top: 3px solid var(--petroleo); padding: 18px 0 24px; }
+.kpi strong { display: block; font-size: 58px; font-weight: 800; color: var(--petroleo); letter-spacing: -0.02em; line-height: 1; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.quote { border-left: 0; position: relative; padding: 18px 0 0 60px; }
+.quote::before { content: "«"; position: absolute; left: 0; top: -6px; font-size: 84px; font-weight: 800; line-height: 1; color: var(--medio-ink); }
+.quote p { font-size: 27px; line-height: 1.35; font-weight: 600; color: var(--petroleo); }
+.quote cite { display: block; font-style: normal; font-size: 20px; font-weight: 700; color: var(--muted); margin-top: 10px; }
+
+/* Listas con marcas */
+.ticks { list-style: none; padding: 0; margin: 0; }
+.ticks li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; font-size: 24px; line-height: 1.32; font-weight: 600; padding: 9px 0; }
+.ticks li svg { width: 34px; height: 34px; margin-top: 1px; }
+.ticks .ok svg { color: var(--pizarra); }
+.ticks .no svg { color: var(--alerta); }
+.ticks .mid svg { color: var(--medio-ink); }
+
+/* Tabla de diferencias */
+.dtable { width: 100%; border-collapse: collapse; font-size: 27px; }
+.dtable th { text-align: left; font-size: 30px; font-weight: 800; padding: 0 22px 16px; }
+.dtable th.l { color: var(--petroleo); border-bottom: 5px solid var(--petroleo); }
+.dtable th.r { color: var(--pizarra); border-bottom: 5px solid var(--medio); }
+.dtable td { padding: 17px 22px; border-bottom: 1px solid var(--celeste); font-weight: 600; line-height: 1.3; vertical-align: top; }
+.dtable td:first-child { color: var(--muted); font-weight: 700; width: 28%; padding-left: 0; }
+.dtable tr.key td { background: rgba(175, 208, 215, 0.35); }
+.dtable tr.key td:first-child { color: var(--petroleo); }
+
+/* Pasos numerados */
+.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 58px 1fr; gap: 18px; align-items: start; padding: 11px 0; font-size: 24px; line-height: 1.32; font-weight: 600; }
+.steps li::before { content: counter(s); width: 50px; height: 50px; border-radius: 50%; background: var(--petroleo); color: var(--ground); display: grid; place-content: center; font-weight: 800; font-size: 24px; }
+
+/* Matriz de riesgos */
+.matrix { display: grid; grid-template-columns: 70px repeat(3, 210px); grid-template-rows: repeat(3, 150px) 56px; gap: 8px; }
+.matrix .cell { border-radius: 10px; display: flex; align-items: flex-end; padding: 10px 14px; font-size: 19px; font-weight: 800; position: relative; }
+.matrix .z0 { background: var(--ground-2); color: var(--muted); }
+.matrix .z1 { background: var(--celeste); color: var(--petroleo); }
+.matrix .z2 { background: var(--medio); color: var(--ink); }
+.matrix .z3 { background: var(--petroleo); color: var(--ground); }
+.matrix .ax { font-size: 19px; font-weight: 700; color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; }
+.matrix .ax.y { writing-mode: vertical-rl; transform: rotate(180deg); }
+.pin { position: absolute; width: 58px; height: 58px; border-radius: 50%; background: var(--ground); color: var(--petroleo); box-shadow: 0 6px 14px rgba(6, 23, 27, 0.3); display: grid; place-content: center; font-size: 28px; font-weight: 800; }
+.pin.alert { background: var(--alerta); color: var(--ground); }
+
+/* Árbol de decisión */
+.q-box { background: var(--petroleo); color: var(--ground); border-radius: 14px; padding: 22px 26px; font-size: 26px; font-weight: 700; line-height: 1.3; }
+.res { border-radius: 14px; padding: 16px 24px; font-size: 27px; font-weight: 800; display: grid; grid-template-columns: 250px 1fr; align-items: center; gap: 18px; line-height: 1.1; }
+.res.leasing { background: var(--petroleo); color: var(--ground); }
+.res.renting { background: var(--medio); color: var(--ink); }
+.res.leaseback { background: var(--pizarra); color: var(--ground); }
+.res small { display: block; font-size: 22px; font-weight: 600; line-height: 1.25; opacity: 0.95; }
+.branch { font-size: 22px; font-weight: 800; fill: var(--pizarra); }
+
+/* Video */
+.slide.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--ground); }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide, .slide.on, .slide.past { transition: opacity 0.2s linear, visibility 0s; transform: none; }
+  .slide.on [class*="a-"] { animation: none !important; opacity: 1 !important; transform: none !important; clip-path: none !important; stroke-dashoffset: 0 !important; }
+  .rail .seg i::after { transition: none; }
+}

@@ -1,0 +1,236 @@
+/* Entrevista: leasing y renting — cinta de procedencia, con la paleta y la letra de las diapositivas */
+
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-wght.ttf") format("truetype"); font-weight: 200 800; font-display: block; }
+
+
+:root {
+  --paper: #f2f2f2;
+  --paper-deep: #e8e8e8;
+  --desk: #0d1f24;
+  --ink: #06171b;
+  --taupe: #26525c;
+  --thread: #7f9aa1;
+  --thread-text: #4f6269;
+  --ribbon: #072e36;
+  --ribbon-hi: #6598a3;
+  --ribbon-dark: #072e36;
+  --ruby-faint: #afd0d7;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--desk);
+  color: var(--ink);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--ruby-faint); color: var(--ink); }
+
+.frame { position: fixed; inset: 0; display: grid; place-items: center; }
+
+/* Lienzo 16:9 de 1920 × 1080 que escala sin deformarse (escala en video.js) */
+.stage {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* Tipografía */
+.d   { font-family: "Manrope", sans-serif; font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; }
+.tx  { font-family: "Manrope", sans-serif; font-weight: 600; line-height: 1.2; }
+.sc  { font-family: "Manrope", sans-serif; font-weight: 700; font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: var(--taupe); line-height: 1; }
+.i   { font-style: normal; }
+.red   { color: var(--ribbon); }
+.gray  { color: var(--thread-text); }
+.taupe { color: var(--taupe); }
+.txt { white-space: nowrap; font-variant-numeric: lining-nums; }
+.txt[style*="width"] { white-space: normal; }
+
+/* Encabezado */
+.rule-top {
+  position: absolute; left: 72px; right: 72px; top: 206px; height: 7px;
+  border-top: 1.5px solid rgba(7, 46, 54, 0.35);
+  border-bottom: 1.5px solid rgba(7, 46, 54, 0.35);
+}
+.record {
+  position: absolute; left: 1364px; top: 46px; width: 484px;
+  padding: 18px 0 18px 0;
+  border-top: 1.5px solid rgba(7, 46, 54, 0.35);
+  border-bottom: 1.5px solid rgba(7, 46, 54, 0.35);
+}
+.record p { margin: 0; }
+.record-name { font-variant-caps: all-small-caps; font-weight: 800; font-family: "Manrope", sans-serif; font-size: 27px; white-space: nowrap; letter-spacing: 0.04em; color: var(--ink); }
+.record-role { font-family: "Manrope", sans-serif; font-style: normal; font-weight: 600; font-size: 21px; color: var(--taupe); margin-top: 8px !important; line-height: 1.15; }
+.record-mark { display: none; }
+
+.q { position: absolute; left: 72px; top: 40px; width: 1270px; height: 160px; }
+.q-mark { position: absolute; left: 0; top: 0; width: 64px; height: 64px; border-radius: 10px; background: var(--ribbon); }
+.q-mark svg { display: none; }
+.q-mark span { font-variant-caps: all-small-caps; font-weight: 800;
+  position: absolute; left: 0; right: 0; top: 17px; text-align: center;
+  font-family: "Manrope", sans-serif; font-size: 30px; color: var(--paper); letter-spacing: 0.04em;
+}
+.q-text {
+  position: absolute; left: 100px; top: 8px; width: 1160px; margin: 0;
+  font-family: "Manrope", sans-serif; font-style: normal; font-weight: 700; font-size: 40px; line-height: 1.16; letter-spacing: -0.01em;
+  color: var(--ink); text-wrap: balance;
+}
+
+/* Escenas */
+.scene, .q { --s: 1; --x: 0; }
+.scene { position: absolute; inset: 0; }
+.scene > *, .dim > *, .sink > *, .compress > * { position: absolute; }
+.scene {
+  opacity: calc(1 - var(--x));
+  transform: translateY(calc(var(--x) * 26px));
+}
+/* Cambio de pregunta: la página se despliega desde el nudo de la cinta (abajo). */
+.scene[data-turn="fold"] { clip-path: circle(calc(var(--s) * 2300px) at var(--ox, 960px) 1000px); }
+/* Dentro de una misma pregunta: un pase tranquilo. */
+.scene[data-turn="quiet"] {
+  opacity: calc(var(--s) * (1 - var(--x)));
+  transform: translateY(calc((1 - var(--s)) * 18px + var(--x) * 26px));
+}
+.q {
+  opacity: calc(var(--s) * (1 - var(--x)));
+  transform: translateY(calc((1 - var(--s)) * 14px - var(--x) * 10px));
+}
+
+/* La cinta que sube desde el nudo y dobla hacia el marcador al cambiar de pregunta */
+.turn { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; pointer-events: none; visibility: hidden; }
+.turn path { fill: none; stroke: var(--ribbon); stroke-width: 14; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1 1; }
+.turn circle { fill: none; stroke: var(--ribbon); stroke-width: 4; stroke-dasharray: 2 10; stroke-linecap: round; }
+
+/* Material del dibujo */
+.art { overflow: visible; }
+.ink   { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.ink.thin { stroke-width: 2.5; }
+.ink.dashed { stroke: var(--thread); stroke-width: 3; stroke-dasharray: 10 9; }
+.silk  { fill: none; stroke: var(--ribbon); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.silk.thin { stroke-width: 7; }
+.thread { fill: none; stroke: var(--thread); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 3 11; }
+.node  { fill: var(--paper); stroke: var(--ribbon); stroke-width: 5; }
+.node.void { stroke: var(--thread); stroke-dasharray: 4 5; }
+.dot   { fill: var(--ink); }
+.seal  { fill: none; stroke: var(--ribbon); stroke-width: 4; }
+.box   { fill: var(--paper-deep); stroke: var(--ink); stroke-width: 3.5; stroke-linejoin: round; }
+.box.void { fill: none; stroke: var(--thread); stroke-dasharray: 8 7; }
+.band  { fill: rgba(101, 152, 163, 0.18); stroke: var(--thread); stroke-width: 2.5; stroke-dasharray: 8 7; }
+.mark  { fill: var(--ribbon); }
+.silkfill { fill: var(--ribbon); transform-box: fill-box; }
+
+.silkbar, .ghost { height: 26px; border-radius: 2px; }
+.silkbar { background: var(--ribbon); }
+.hatch { fill: url(#pat-hatch); stroke: var(--ink); stroke-width: 2.5; }
+.ghost { border: 2.5px dashed var(--thread); height: 34px; }
+
+.strike { height: 5px; background: var(--thread); border-radius: 3px; }
+.strike.red { background: var(--ribbon); }
+
+/* Veredicto: etiqueta plana petróleo, como la placa de las diapositivas */
+.stamp {
+  color: var(--paper);
+  background: var(--ribbon);
+  border-radius: 12px;
+  padding: 14px 30px 16px;
+  text-align: center;
+  font-family: "Manrope", sans-serif;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(6, 23, 27, 0.18);
+}
+.stamp b { display: block; font-weight: 800; font-size: 50px; letter-spacing: -0.01em; }
+.stamp b::first-letter { text-transform: uppercase; }
+.stamp span { display: block; font-size: 24px; font-weight: 700; margin-top: 8px; color: var(--ruby-faint); }
+.stamp.void { color: var(--ribbon); background: var(--paper); box-shadow: inset 0 0 0 4px var(--ribbon), 0 8px 18px rgba(6, 23, 27, 0.18); }
+.stamp.void span { color: var(--ribbon); font-size: 26px; }
+.stamp.round { padding: 18px 34px 20px; }
+
+/* Etiqueta de procedencia */
+.tag { font-variant-caps: all-small-caps; font-weight: 800;
+  font-family: "Manrope", sans-serif; font-size: 32px; letter-spacing: 0.04em; line-height: 1;
+  color: var(--ink);
+  background: var(--paper-deep);
+  border: 2.5px solid currentColor;
+  border-radius: 6px 26px 26px 6px;
+  padding: 10px 24px 12px 46px;
+  box-shadow: 0 4px 10px rgba(6, 23, 27, 0.18);
+}
+.tag::before {
+  content: ""; position: absolute; left: 16px; top: 50%;
+  width: 13px; height: 13px; margin-top: -6px;
+  border-radius: 50%; border: 2.5px solid currentColor; background: var(--paper);
+}
+.tag.red { color: var(--ribbon); }
+
+/* Pestaña de columna */
+.tab {
+  font-family: "Manrope", sans-serif; font-weight: 800; font-size: 48px; line-height: 1;
+  color: var(--paper); background: var(--ribbon);
+  padding: 8px 46px 12px 22px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 50%, 100% 100%, 0 100%);
+}
+.tab.void { color: var(--thread-text); background: none; outline: 2.5px dashed var(--thread); outline-offset: -3px; clip-path: none; padding-right: 30px; }
+
+/* Movimiento: todo deriva de --p (entrada) y --q (salida), que calcula video.js desde audio.currentTime */
+[data-in] { --p: 1; --q: 0; }
+.fx-fade  { opacity: calc(var(--p) * (1 - var(--q))); }
+.fx-rise  { opacity: calc(var(--p) * (1 - var(--q))); transform: translateY(calc((1 - var(--p)) * 26px)); }
+.fx-left  { opacity: calc(var(--p) * (1 - var(--q))); transform: translateX(calc((1 - var(--p)) * -34px)); }
+.fx-draw  { stroke-dasharray: 1 1; stroke-dashoffset: calc(1 - var(--p)); opacity: calc(1 - var(--q)); }
+.fx-stamp {
+  opacity: calc(min(1, var(--p) * 3) * (1 - var(--q)));
+  transform: scale(calc(1.25 - 0.25 * var(--p)));
+  filter: blur(calc((1 - var(--p)) * 3px));
+}
+.fx-grow  { transform: scaleX(var(--p)); transform-origin: left center; opacity: calc(1 - var(--q)); }
+.fx-growy { transform: scaleY(var(--p)); transform-origin: 50% 100%; transform-box: fill-box; opacity: calc(1 - var(--q)); }
+.fx-wipe  { clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0); }
+.fx-drop  { opacity: var(--p); transform: translateY(calc((1 - var(--p)) * -48px)); }
+.tag.fx-rise { transform: translateY(calc((1 - var(--p)) * 26px)) rotate(var(--rot, 0deg)); transform-origin: 16px 50%; }
+.dim      { opacity: calc(1 - 0.38 * var(--p)); filter: grayscale(var(--p)); }
+.sink     { transform: translateY(calc(var(--p) * 22px)); }
+.compress { transform: scaleX(calc(1 - 0.16 * var(--p))); transform-origin: left center; }
+
+/* Cinta de la entrevista */
+.timeline { position: absolute; left: 0; top: 896px; width: 1920px; height: 180px; overflow: visible; }
+.tl-thread { fill: none; stroke: var(--thread); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 3 11; }
+.tl-silk   { fill: none; stroke: var(--ribbon); stroke-width: 14; stroke-linecap: round; }
+.tl-sheen  { fill: none; stroke: var(--ribbon-hi); stroke-width: 3; stroke-linecap: round; opacity: 0.7; transform: translateY(-3px); }
+.tl-now    { fill: var(--paper); stroke: var(--ribbon); stroke-width: 5; }
+.tl-fold circle { fill: var(--paper); stroke: var(--thread); stroke-width: 3; }
+.tl-fold.done circle { stroke: var(--ribbon); }
+.tl-fold text { font-variant-caps: all-small-caps; font-weight: 800; font-family: "Manrope", sans-serif; font-size: 22px; fill: var(--taupe); letter-spacing: 0.04em; }
+.tl-fold.now text { fill: var(--ribbon); }
+.clock { font-variant-caps: all-small-caps; font-weight: 800;
+  position: absolute; right: 96px; top: 858px;
+  font-family: "Manrope", sans-serif; font-size: 26px; color: var(--taupe); letter-spacing: 0.04em;
+  display: flex; gap: 18px; font-variant-numeric: tabular-nums lining-nums;
+}
+#clock-state { color: var(--ribbon); }
+
+/* Velo de inicio */
+.veil {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; text-align: center; gap: 22px;
+  background: rgba(242, 242, 242, 0.9);
+  transition: opacity 0.5s var(--ease-out);
+}
+.veil p { margin: 0; }
+.veil-title { font-family: "Manrope", sans-serif; font-weight: 800; letter-spacing: -0.02em; font-size: 80px; color: var(--ribbon); }
+.veil-keys  { font-family: "Manrope", sans-serif; font-style: normal; font-weight: 600; font-size: 30px; color: var(--taupe); }
+.veil.gone { opacity: 0; pointer-events: none; }
+
+:fullscreen { cursor: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .turn { display: none; }
+  .veil { transition: none; }
+}
